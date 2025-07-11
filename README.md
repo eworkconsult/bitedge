@@ -1,6 +1,6 @@
 # Bitedge Network
 
-**The Go-To Hub for Everything Crypto**
+**The Go-To Hub for Crypto Wisdom
 
 Bitedge Network is envisioned as a comprehensive platform dedicated to providing up-to-date and in-depth information, resources, and tools for the cryptocurrency and blockchain industry. Our mission is to empower individuals and organizations with the knowledge and capabilities needed to navigate, innovate, and thrive in the rapidly evolving digital asset landscape.
 
