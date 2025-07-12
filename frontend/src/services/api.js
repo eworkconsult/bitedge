@@ -80,4 +80,8 @@ export default {
     fetchTopicDetails: (slug) => apiClient.get(`/topics/${slug}`),
     createTopic: (forumSlug, data) => apiClient.post(`/forums/${forumSlug}/topics`, data),
     createPost: (topicSlug, data) => apiClient.post(`/topics/${topicSlug}/posts`, data),
+    updatePost: (postId, data) => apiClient.put(`/posts/${postId}`, data),
+    deletePost: (postId) => apiClient.delete(`/posts/${postId}`),
+    updateTopic: (topicSlug, data) => apiClient.put(`/topics/${topicSlug}`, data),
+    deleteTopic: (topicSlug) => apiClient.delete(`/topics/${topicSlug}`),
 };

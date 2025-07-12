@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // To show "Reply" button/form
 import apiService from '../services/api';
 import RichTextEditor from '../components/common/RichTextEditor'; // Import the new component
+import EditPostModal from '../components/modals/EditPostModal'; // Import the modal
 // import './TopicPage.css'; // Optional
 
 const TopicPage = () => {
@@ -10,13 +11,53 @@ const TopicPage = () => {
   const [topic, setTopic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isAuthenticated } = useAuth(); // For reply functionality
+  const { isAuthenticated, user } = useAuth(); // For reply and edit/delete functionality
 
   // State for new post content if implementing reply form directly on this page
   const [replyContent, setReplyContent] = useState('');
   const [replying, setReplying] = useState(false);
   const [replyError, setReplyError] = useState('');
 
+  // State for Edit Post Modal
+  const [editingPost, setEditingPost] = useState(null); // The post object to edit
+  const isEditModalOpen = !!editingPost;
+
+  const handleOpenEditModal = (post) => {
+    setEditingPost(post);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditingPost(null);
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    // Update the post in the local state to see changes immediately
+    setTopic(prevTopic => ({
+      ...prevTopic,
+      posts: prevTopic.posts.map(p => p.id === updatedPost.id ? updatedPost : p)
+    }));
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (window.confirm('Are you sure you want to delete this post? This cannot be undone.')) {
+        try {
+            await apiService.deletePost(postId);
+            // Re-fetch topic data to show the updated post list and counts
+            // A more optimistic UI update would be to filter the post out of the local state
+            setTopic(prevTopic => ({
+                ...prevTopic,
+                posts: prevTopic.posts.filter(p => p.id !== postId)
+            }));
+            // Note: This optimistic update won't reflect updated reply counts on the topic
+            // until the next full fetch. For this app, re-fetching is fine.
+            // Let's just re-fetch for simplicity and accuracy.
+            fetchTopicData();
+        } catch (err) {
+            alert(`Failed to delete post: ${err.response?.data?.message || err.message}`);
+            console.error("Error deleting post:", err);
+        }
+    }
+  };
 
   const fetchTopicData = async () => {
     try {
@@ -68,6 +109,7 @@ const TopicPage = () => {
   if (!topic) return <p>Topic not found.</p>;
 
   return (
+    <>
     <div className="topic-page">
       <h1>{topic.title}</h1>
       <p>
@@ -81,10 +123,18 @@ const TopicPage = () => {
         {topic.posts && topic.posts.length > 0 ? (
           topic.posts.map(post => (
             <div key={post.id} className="post-item">
-              <div className="post-author">
-                <img src={post.user?.avatar_url || '/default-avatar.png'} alt={post.user?.username} className="avatar" />
-                <strong>{post.user?.username || 'User'}</strong>
-                <small>Posted on: {new Date(post.createdAt).toLocaleString()}</small>
+              <div className="post-header">
+                <div className="post-author">
+                  <img src={post.user?.avatar_url || '/default-avatar.png'} alt={post.user?.username} className="avatar" />
+                  <strong>{post.user?.username || 'User'}</strong>
+                  <small>Posted on: {new Date(post.createdAt).toLocaleString()}</small>
+                </div>
+                {isAuthenticated && (user?.isAdmin || user?.userId === post.user?.id) && (
+                  <div className="post-actions">
+                    <button onClick={() => handleOpenEditModal(post)} className="btn-sm btn-secondary">Edit</button>
+                    <button onClick={() => handleDeletePost(post.id)} className="btn-sm btn-danger">Delete</button>
+                  </div>
+                )}
               </div>
               <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }}>
                 {/* The backend should sanitize this HTML before storing. Assuming it's safe. */}
@@ -127,12 +177,35 @@ const TopicPage = () => {
           padding: 15px;
           margin-bottom: 15px;
         }
-        .post-author {
+        .post-header {
           display: flex;
-          align-items: center;
+          justify-content: space-between;
+          align-items: flex-start;
           margin-bottom: 10px;
           padding-bottom: 10px;
           border-bottom: 1px solid #f0f0f0;
+        }
+        .post-author {
+          display: flex;
+          align-items: center;
+        }
+        .post-actions button {
+          margin-left: 10px;
+        }
+        .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 0.2rem;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
         }
         .post-author .avatar {
           width: 40px;
@@ -182,6 +255,14 @@ const TopicPage = () => {
         }
       `}</style>
     </div>
+    {isEditModalOpen && (
+      <EditPostModal
+        post={editingPost}
+        onClose={handleCloseEditModal}
+        onPostUpdated={handlePostUpdated}
+      />
+    )}
+    </>
   );
 };
 
