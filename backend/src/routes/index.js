@@ -7,9 +7,11 @@ const categoryRoutes = require('./categoryRoutes');
 const forumRoutes = require('./forumRoutes');
 const topicRoutes = require('./topicRoutes');
 const postRoutes = require('./postRoutes');
+const userRoutes = require('./userRoutes');
 
 // Mount resource routers
 router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/forums', forumRoutes);
 router.use('/topics', topicRoutes);   // Handles reading topics and creating posts within topics

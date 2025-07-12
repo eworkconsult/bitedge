@@ -8,6 +8,8 @@ import CategoryPage from './pages/CategoryPage';
 import ForumPage from './pages/ForumPage';
 import TopicPage from './pages/TopicPage';
 import CreateTopicPage from './pages/CreateTopicPage'; // Import the new page
+import ProfilePage from './pages/ProfilePage'; // Import the new page
+import EditProfilePage from './pages/EditProfilePage'; // Import the new page
 import NotFoundPage from './pages/NotFoundPage';
 // import { AuthProvider } from './contexts/AuthContext'; // To be created
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -41,6 +43,19 @@ function App() {
 
           {/* Example topic route: /topics/my-first-topic-slug */}
           <Route path="/topics/:topicSlug" element={<MainLayout><TopicPage /></MainLayout>} />
+
+          {/* User profile route */}
+          <Route path="/users/:username" element={<MainLayout><ProfilePage /></MainLayout>} />
+
+          {/* Edit profile route */}
+          <Route
+            path="/settings/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout><EditProfilePage /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<MainLayout><NotFoundPage /></MainLayout>} />
         </Routes>

@@ -84,4 +84,7 @@ export default {
     deletePost: (postId) => apiClient.delete(`/posts/${postId}`),
     updateTopic: (topicSlug, data) => apiClient.put(`/topics/${topicSlug}`, data),
     deleteTopic: (topicSlug) => apiClient.delete(`/topics/${topicSlug}`),
+    // Users
+    fetchUserProfile: (username) => apiClient.get(`/users/${username}`),
+    updateUserProfile: (data) => apiClient.put('/users/me/profile', data),
 };

@@ -101,7 +101,7 @@ const ForumPage = () => {
                   )}
                 </div>
                 <small>
-                  Started by {topic.user?.username || 'Unknown User'} on {new Date(topic.createdAt).toLocaleDateString()}
+                  Started by <Link to={`/users/${topic.user?.username}`}>{topic.user?.username || 'Unknown User'}</Link> on {new Date(topic.createdAt).toLocaleDateString()}
                 </small>
               </div>
               <div className="topic-stats">
@@ -113,7 +113,7 @@ const ForumPage = () => {
                   Last post:
                   {topic.lastPost ? (
                     <>
-                      {' by '} {topic.lastPost.user?.username || 'N/A'}
+                      {' by '} <Link to={`/users/${topic.lastPost.user?.username}`}>{topic.lastPost.user?.username || 'N/A'}</Link>
                       {' on '} {new Date(topic.lastPost.createdAt).toLocaleDateString()}
                     </>
                   ) : (

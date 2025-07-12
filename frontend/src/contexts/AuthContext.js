@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    setUser, // Expose setUser to allow components to update it
     isAuthenticated: !!user,
     loading, // To allow components to wait for initial auth check
     login,

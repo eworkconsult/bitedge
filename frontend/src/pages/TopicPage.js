@@ -117,7 +117,7 @@ const TopicPage = () => {
         {' > '}
         <Link to={`/categories/${topic.forum?.category?.slug}`}>{topic.forum?.category?.name || 'Category'}</Link>
       </p>
-      <p>Started by: {topic.user?.username || 'Unknown'} on {new Date(topic.createdAt).toLocaleString()}</p>
+      <p>Started by: <Link to={`/users/${topic.user?.username}`}>{topic.user?.username || 'Unknown'}</Link> on {new Date(topic.createdAt).toLocaleString()}</p>
 
       <div className="post-list">
         {topic.posts && topic.posts.length > 0 ? (
@@ -125,9 +125,13 @@ const TopicPage = () => {
             <div key={post.id} className="post-item">
               <div className="post-header">
                 <div className="post-author">
-                  <img src={post.user?.avatar_url || '/default-avatar.png'} alt={post.user?.username} className="avatar" />
-                  <strong>{post.user?.username || 'User'}</strong>
-                  <small>Posted on: {new Date(post.createdAt).toLocaleString()}</small>
+                  <Link to={`/users/${post.user?.username}`}>
+                    <img src={post.user?.avatar_url || '/default-avatar.png'} alt={post.user?.username} className="avatar" />
+                  </Link>
+                  <div className="author-details">
+                    <strong><Link to={`/users/${post.user?.username}`}>{post.user?.username || 'User'}</Link></strong>
+                    <small>Posted on: {new Date(post.createdAt).toLocaleString()}</small>
+                  </div>
                 </div>
                 {isAuthenticated && (user?.isAdmin || user?.userId === post.user?.id) && (
                   <div className="post-actions">
@@ -214,10 +218,14 @@ const TopicPage = () => {
           margin-right: 10px;
           object-fit: cover; /* Ensure avatar aspect ratio is maintained */
         }
-        .post-author strong {
-          margin-right: auto; /* Pushes date to the right */
+        .author-details {
+            display: flex;
+            flex-direction: column;
         }
-        .post-author small {
+        .author-details strong {
+            margin-bottom: 2px;
+        }
+        .author-details small {
           font-size: 0.8rem;
           color: #777;
         }

@@ -33,8 +33,12 @@ const Navbar = () => {
           {isAuthenticated ? (
             <>
               <li className="nav-item">
-                {/* Link to a profile page could go here */}
-                <span className="nav-link">Welcome, {user?.username || 'User'}!</span>
+                <Link to={`/users/${user.username}`} className="nav-link">
+                  Welcome, {user?.username || 'User'}!
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/settings/profile" className="nav-link">Edit Profile</Link>
               </li>
               <li className="nav-item">
                 <button onClick={handleLogout} className="nav-link btn-link">Logout</button>
