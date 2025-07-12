@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // To show "Reply" button/form
 import apiService from '../services/api';
+import RichTextEditor from '../components/common/RichTextEditor'; // Import the new component
 // import './TopicPage.css'; // Optional
 
 const TopicPage = () => {
@@ -36,6 +37,10 @@ const TopicPage = () => {
       fetchTopicData();
     }
   }, [topicSlug]);
+
+  const handleEditorChange = (content) => {
+    setReplyContent(content);
+  };
 
   const handleReplySubmit = async (e) => {
     e.preventDefault();
@@ -81,9 +86,8 @@ const TopicPage = () => {
                 <strong>{post.user?.username || 'User'}</strong>
                 <small>Posted on: {new Date(post.createdAt).toLocaleString()}</small>
               </div>
-              <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }}>
-                {/* Using dangerouslySetInnerHTML for rich text. Sanitize on backend or use a safe HTML renderer. */}
-                {/* For plain text: <p>{post.content}</p> */}
+              <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }}>
+                {/* The backend should sanitize this HTML before storing. Assuming it's safe. */}
               </div>
             </div>
           ))
@@ -97,15 +101,12 @@ const TopicPage = () => {
           <h3>Reply to this Topic</h3>
           <form onSubmit={handleReplySubmit}>
             {replyError && <p className="error-message" style={{color: 'red'}}>{replyError}</p>}
-            <textarea
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              placeholder="Write your reply..."
-              rows="5"
-              required
+            <RichTextEditor
+              initialValue={replyContent}
+              onEditorChange={handleEditorChange}
               disabled={replying}
             />
-            <button type="submit" disabled={replying} className="btn-primary">
+            <button type="submit" disabled={replying} className="btn-primary" style={{marginTop: '10px'}}>
               {replying ? 'Submitting...' : 'Submit Reply'}
             </button>
           </form>
@@ -159,16 +160,6 @@ const TopicPage = () => {
         }
         .reply-form-container h3 {
             margin-top: 0;
-        }
-        .reply-form-container textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            font-family: inherit;
-            font-size: 1rem;
         }
         .btn-primary { /* Copied from App.css for brevity, should be global */
             padding: 0.5rem 1rem;

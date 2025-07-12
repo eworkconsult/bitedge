@@ -7,8 +7,10 @@ import RegisterPage from './pages/RegisterPage';
 import CategoryPage from './pages/CategoryPage';
 import ForumPage from './pages/ForumPage';
 import TopicPage from './pages/TopicPage';
+import CreateTopicPage from './pages/CreateTopicPage'; // Import the new page
 import NotFoundPage from './pages/NotFoundPage';
 // import { AuthProvider } from './contexts/AuthContext'; // To be created
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 import './App.css'; // Default CRA styles, can be customized
 
@@ -25,8 +27,17 @@ function App() {
           <Route path="/categories/:categorySlug" element={<MainLayout><CategoryPage /></MainLayout>} />
 
           {/* Example forum route: /forums/bitcoin-discussion */}
-          {/* Or nested: /categories/:categorySlug/:forumSlug */}
           <Route path="/forums/:forumSlug" element={<MainLayout><ForumPage /></MainLayout>} />
+
+          {/* Protected route for creating a new topic */}
+          <Route
+            path="/forums/:forumSlug/create-topic"
+            element={
+              <ProtectedRoute>
+                <MainLayout><CreateTopicPage /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Example topic route: /topics/my-first-topic-slug */}
           <Route path="/topics/:topicSlug" element={<MainLayout><TopicPage /></MainLayout>} />
