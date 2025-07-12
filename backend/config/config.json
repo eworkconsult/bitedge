@@ -1,0 +1,39 @@
+{
+  "development": {
+    "username": { "ENV": "DB_USERNAME" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "database": { "ENV": "DB_NAME" },
+    "host": { "ENV": "DB_HOST" },
+    "port": { "ENV": "DB_PORT" },
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "test": {
+    "username": { "ENV": "DB_USERNAME_TEST" },
+    "password": { "ENV": "DB_PASSWORD_TEST" },
+    "database": { "ENV": "DB_NAME_TEST" },
+    "host": { "ENV": "DB_HOST_TEST" },
+    "port": { "ENV": "DB_PORT_TEST" },
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": { "ENV": "DB_USERNAME_PROD" },
+    "password": { "ENV": "DB_PASSWORD_PROD" },
+    "database": { "ENV": "DB_NAME_PROD" },
+    "host": { "ENV": "DB_HOST_PROD" },
+    "port": { "ENV": "DB_PORT_PROD" },
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    },
+    "use_env_variable": "DATABASE_URL"
+  }
+}

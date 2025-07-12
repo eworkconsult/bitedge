@@ -1,0 +1,21 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding-top: 20px; /* Space below navbar */
+  padding-bottom: 20px; /* Space above footer */
+}
+
+/* Basic container to center content and provide padding */
+.container {
+  width: 90%;
+  max-width: 1200px; /* Max width of content */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
