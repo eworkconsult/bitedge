@@ -47,6 +47,69 @@ exports.getUserProfile = async (req, res, next) => {
     }
 };
 
+// === ADMIN-ONLY FUNCTIONS ===
+
+// List all users (paginated)
+exports.listUsers = async (req, res, next) => {
+    try {
+        const { page = 1, limit = 20 } = req.query;
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await User.findAndCountAll({
+            attributes: ['id', 'username', 'email', 'is_admin', 'is_active', 'createdAt'],
+            limit: parseInt(limit),
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
+        res.json({
+            users: rows,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages,
+                totalUsers: count,
+                limit: parseInt(limit)
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Toggle a user's 'is_active' status (ban/unban)
+exports.toggleUserActive = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const userToToggle = await User.findByPk(userId);
+
+        if (!userToToggle) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Prevent an admin from deactivating themselves
+        if (userToToggle.id === req.user.userId) {
+            return res.status(400).json({ message: "You cannot change your own active status."});
+        }
+
+        userToToggle.is_active = !userToToggle.is_active;
+        await userToToggle.save();
+
+        res.json({
+            message: `User ${userToToggle.username} has been ${userToToggle.is_active ? 'unbanned' : 'banned'}.`,
+            user: {
+                id: userToToggle.id,
+                username: userToToggle.username,
+                is_active: userToToggle.is_active
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Update the logged-in user's own profile
 exports.updateUserProfile = async (req, res, next) => {
     try {

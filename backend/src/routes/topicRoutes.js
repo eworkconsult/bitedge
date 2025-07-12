@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const topicController = require('../controllers/topicController');
 const postController = require('../controllers/postController'); // For creating posts within a topic
-const { authenticateToken } = require('../middlewares/authMiddleware');
+const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
 
 // GET /api/topics/:topicSlug - Get a specific topic by slug, including its posts
 router.get('/:topicSlug', topicController.getTopicBySlug);
@@ -15,8 +15,10 @@ router.post('/:topicSlug/posts', authenticateToken, postController.createPostInT
 router.put('/:topicSlug', authenticateToken, topicController.updateTopic);
 router.patch('/:topicSlug', authenticateToken, topicController.updateTopic);
 router.delete('/:topicSlug', authenticateToken, topicController.deleteTopic);
-// router.patch('/:topicSlug/lock', authenticateToken, /* isAdminOrModerator, */ topicController.lockTopic);
-// router.patch('/:topicSlug/pin', authenticateToken, /* isAdminOrModerator, */ topicController.pinTopic);
+
+// Admin-only routes
+router.patch('/:topicSlug/pin', authenticateToken, isAdmin, topicController.togglePin);
+router.patch('/:topicSlug/lock', authenticateToken, isAdmin, topicController.toggleLock);
 
 
 module.exports = router;

@@ -198,5 +198,58 @@ exports.deleteTopic = async (req, res, next) => {
     }
 };
 
-// TODO: Lock/Unlock Topic (Admin/Moderator)
-// TODO: Pin/Unpin Topic (Admin/Moderator)
+// Pin or Unpin a Topic
+exports.togglePin = async (req, res, next) => {
+    try {
+        const { topicSlug } = req.params;
+        const topic = await Topic.findOne({ where: { slug: topicSlug } });
+
+        if (!topic) {
+            return res.status(404).json({ message: 'Topic not found.' });
+        }
+
+        topic.is_pinned = !topic.is_pinned;
+        await topic.save();
+
+        res.json({
+            message: `Topic has been ${topic.is_pinned ? 'pinned' : 'unpinned'}.`,
+            topic: {
+                id: topic.id,
+                title: topic.title,
+                slug: topic.slug,
+                is_pinned: topic.is_pinned
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Lock or Unlock a Topic
+exports.toggleLock = async (req, res, next) => {
+    try {
+        const { topicSlug } = req.params;
+        const topic = await Topic.findOne({ where: { slug: topicSlug } });
+
+        if (!topic) {
+            return res.status(404).json({ message: 'Topic not found.' });
+        }
+
+        topic.is_locked = !topic.is_locked;
+        await topic.save();
+
+        res.json({
+            message: `Topic has been ${topic.is_locked ? 'locked' : 'unlocked'}.`,
+            topic: {
+                id: topic.id,
+                title: topic.title,
+                slug: topic.slug,
+                is_locked: topic.is_locked
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
