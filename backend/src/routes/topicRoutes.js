@@ -12,9 +12,9 @@ router.post('/:topicSlug/posts', authenticateToken, postController.createPostInT
 
 
 // Routes for updating/deleting topics, locking, pinning would go here
-// Example:
-// router.put('/:topicSlug', authenticateToken, topicController.updateTopic);
-// router.delete('/:topicSlug', authenticateToken, topicController.deleteTopic);
+router.put('/:topicSlug', authenticateToken, topicController.updateTopic);
+router.patch('/:topicSlug', authenticateToken, topicController.updateTopic);
+router.delete('/:topicSlug', authenticateToken, topicController.deleteTopic);
 // router.patch('/:topicSlug/lock', authenticateToken, /* isAdminOrModerator, */ topicController.lockTopic);
 // router.patch('/:topicSlug/pin', authenticateToken, /* isAdminOrModerator, */ topicController.pinTopic);
 

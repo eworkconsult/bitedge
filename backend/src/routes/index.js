@@ -6,14 +6,14 @@ const authRoutes = require('./authRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const forumRoutes = require('./forumRoutes');
 const topicRoutes = require('./topicRoutes');
-// const postRoutes = require('./postRoutes'); // Posts are handled within topicRoutes for now
+const postRoutes = require('./postRoutes');
 
 // Mount resource routers
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/forums', forumRoutes);
-router.use('/topics', topicRoutes);   // Handles /topics/:topicSlug and /topics/:topicSlug/posts
-// router.use('/posts', postRoutes);     // Not needed as a top-level route if always nested
+router.use('/topics', topicRoutes);   // Handles reading topics and creating posts within topics
+router.use('/posts', postRoutes);     // Handles actions on existing posts (edit, delete)
 
 router.get('/', (req, res) => {
     res.json({ message: 'Bitedge API main route. See /api/auth for authentication.' });

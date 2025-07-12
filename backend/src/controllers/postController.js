@@ -75,5 +75,83 @@ exports.createPostInTopic = async (req, res, next) => {
 };
 
 // TODO: Get Post (rarely needed individually, usually part of Topic)
-// TODO: Update Post (Admin/Owner)
-// TODO: Delete Post (Admin/Owner)
+
+// Update a Post
+exports.updatePost = async (req, res, next) => {
+    try {
+        const { postId } = req.params;
+        const { content } = req.body;
+        const { userId, isAdmin } = req.user; // from authenticateToken middleware
+
+        if (!content) {
+            return res.status(400).json({ message: 'Content cannot be empty.' });
+        }
+
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found.' });
+        }
+
+        // Check if user is the owner or an admin
+        if (post.userId !== userId && !isAdmin) {
+            return res.status(403).json({ message: 'Forbidden: You do not have permission to edit this post.' });
+        }
+
+        post.content = content;
+        await post.save();
+
+        res.json(post);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Delete a Post
+exports.deletePost = async (req, res, next) => {
+    const t = await sequelize.transaction();
+    try {
+        const { postId } = req.params;
+        const { userId, isAdmin } = req.user;
+
+        const post = await Post.findByPk(postId, { transaction: t });
+
+        if (!post) {
+            await t.rollback();
+            return res.status(404).json({ message: 'Post not found.' });
+        }
+
+        // Check if user is the owner or an admin
+        if (post.userId !== userId && !isAdmin) {
+            await t.rollback();
+            return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this post.' });
+        }
+
+        const topic = await Topic.findByPk(post.topicId, { transaction: t });
+        const forum = topic ? await Forum.findByPk(topic.forumId, { transaction: t }) : null;
+
+        // Delete the post
+        await post.destroy({ transaction: t });
+
+        // Decrement counts
+        if (topic) {
+            topic.reply_count = Math.max(0, (topic.reply_count || 1) - 1);
+            // TODO: Add logic here to find the new lastPostId for the topic if this was the last post.
+            // This can be complex. For now, we can set it to null or leave it.
+            // A simpler approach is to just decrement counts.
+            await topic.save({ transaction: t });
+        }
+        if (forum) {
+            forum.post_count = Math.max(0, (forum.post_count || 1) - 1);
+            await forum.save({ transaction: t });
+        }
+
+        await t.commit();
+        res.status(204).send(); // 204 No Content for successful deletion
+
+    } catch (error) {
+        await t.rollback();
+        next(error);
+    }
+};

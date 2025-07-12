@@ -120,7 +120,83 @@ exports.createTopicInForum = async (req, res, next) => {
     }
 };
 
-// TODO: Update Topic (Admin/Owner)
-// TODO: Delete Topic (Admin/Owner)
+// Update a Topic's title
+exports.updateTopic = async (req, res, next) => {
+    try {
+        const { topicSlug } = req.params;
+        const { title } = req.body;
+        const { userId, isAdmin } = req.user;
+
+        if (!title) {
+            return res.status(400).json({ message: 'Title cannot be empty.' });
+        }
+
+        const topic = await Topic.findOne({ where: { slug: topicSlug } });
+
+        if (!topic) {
+            return res.status(404).json({ message: 'Topic not found.' });
+        }
+
+        if (topic.userId !== userId && !isAdmin) {
+            return res.status(403).json({ message: 'Forbidden: You do not have permission to edit this topic.' });
+        }
+
+        topic.title = title;
+        // Note: If slug is based on title, it should be regenerated here as well,
+        // which could be complex if slugs must be unique forever.
+        // For simplicity, we are not changing the slug.
+        await topic.save();
+
+        res.json(topic);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Delete a Topic
+exports.deleteTopic = async (req, res, next) => {
+    const t = await sequelize.transaction();
+    try {
+        const { topicSlug } = req.params;
+        const { userId, isAdmin } = req.user;
+
+        const topic = await Topic.findOne({ where: { slug: topicSlug }, transaction: t });
+
+        if (!topic) {
+            await t.rollback();
+            return res.status(404).json({ message: 'Topic not found.' });
+        }
+
+        if (topic.userId !== userId && !isAdmin) {
+            await t.rollback();
+            return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this topic.' });
+        }
+
+        const forum = await Forum.findByPk(topic.forumId, { transaction: t });
+
+        // The number of posts to decrement is the topic's reply_count + the initial post (1)
+        const postsInTopicCount = (topic.reply_count || 0) + 1;
+
+        // Deleting the topic will cascade and delete all its posts due to model association settings.
+        await topic.destroy({ transaction: t });
+
+        if (forum) {
+            forum.topic_count = Math.max(0, (forum.topic_count || 1) - 1);
+            forum.post_count = Math.max(0, forum.post_count - postsInTopicCount);
+            // TODO: Add logic here to find the new lastTopicId for the forum.
+            // This would involve finding the most recently active topic remaining in the forum.
+            await forum.save({ transaction: t });
+        }
+
+        await t.commit();
+        res.status(204).send();
+
+    } catch (error) {
+        await t.rollback();
+        next(error);
+    }
+};
+
 // TODO: Lock/Unlock Topic (Admin/Moderator)
 // TODO: Pin/Unpin Topic (Admin/Moderator)
