@@ -130,47 +130,25 @@ button {
   margin-top: 1rem;
 }
 
-
-/* Add other global styles or utility classes here */
-
-/* Example of how CRA default logo was styled, can be removed */
-/*
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Layout styles that were in MainLayout.css */
+.main-layout {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
 }
 
-.App-link {
-  color: #61dafb;
+.main-content {
+  flex-grow: 1;
+  padding-top: 20px; /* Space below navbar */
+  padding-bottom: 20px; /* Space above footer */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Basic container to center content and provide padding */
+.container {
+  width: 90%;
+  max-width: 1200px; /* Max width of content */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
 }
-*/

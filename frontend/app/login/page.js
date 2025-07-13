@@ -1,7 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-// import './AuthForm.css'; // Optional: for styling forms
+import { useRouter, Link } from 'next/navigation'; // Use next/navigation
+import { useAuth } from '../../contexts/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await login(email, password);
-      navigate('/'); // Redirect to homepage on successful login
+      router.push('/'); // Redirect to homepage on successful login
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
     } finally {
@@ -26,7 +27,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-form-container"> {/* Optional: for styling */}
+    <div className="auth-form-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
@@ -57,7 +58,7 @@ const LoginPage = () => {
         </button>
       </form>
       <p>
-        Don't have an account? <Link to="/register">Register here</Link>
+        Don't have an account? <Link href="/register">Register here</Link>
       </p>
     </div>
   );

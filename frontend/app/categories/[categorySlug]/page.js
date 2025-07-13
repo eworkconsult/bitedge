@@ -1,37 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import apiService from '../services/api';
-// import './CategoryPage.css'; // Optional
+import React from 'react';
+import Link from 'next/link';
+import apiService from '../../../services/api'; // Adjust path due to nesting
+import { notFound } from 'next/navigation'; // For handling 404
 
-const CategoryPage = () => {
-  const { categorySlug } = useParams();
-  const [category, setCategory] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const loadCategoryDetails = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        const response = await apiService.fetchCategoryDetails(categorySlug);
-        setCategory(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || err.message || `Failed to load category: ${categorySlug}.`);
-        console.error(`Error fetching category ${categorySlug}:`, err);
-      } finally {
-        setLoading(false);
-      }
+export async function generateMetadata({ params }) {
+  const { categorySlug } = params;
+  try {
+    const category = await getCategoryDetails(categorySlug);
+    return {
+      title: `${category.name} - Bitedge Network`,
+      description: category.description || `Forums and discussions in the ${category.name} category.`,
     };
+  } catch (error) {
+    return {
+      title: 'Category Not Found',
+      description: 'The category you are looking for does not exist.',
+    };
+  }
+}
 
-    if (categorySlug) {
-      loadCategoryDetails();
+async function getCategoryDetails(slug) {
+  try {
+    const response = await apiService.fetchCategoryDetails(slug);
+    return response.data;
+  } catch (error) {
+    // If API returns 404 or another error, we can trigger Next.js's not found page
+    if (error.response && error.response.status === 404) {
+      notFound();
     }
-  }, [categorySlug]);
+    // For other errors, you might want to log them and still show a not found or error state
+    console.error(`Failed to fetch category ${slug}:`, error);
+    notFound();
+  }
+}
 
-  if (loading) return <p>Loading category details...</p>;
-  if (error) return <p className="error-message" style={{color: 'red'}}>{error}</p>;
-  if (!category) return <p>Category not found.</p>;
+// This is the page component
+const CategoryPage = async ({ params }) => {
+  const { categorySlug } = params;
+  const category = await getCategoryDetails(categorySlug);
 
   return (
     <div className="category-page">
@@ -43,7 +49,7 @@ const CategoryPage = () => {
         <ul className="forum-list">
           {category.forums.map(forum => (
             <li key={forum.id} className="forum-item">
-              <Link to={`/forums/${forum.slug}`}>
+              <Link href={`/forums/${forum.slug}`}>
                 <h4>{forum.name}</h4>
               </Link>
               <p>{forum.description || 'No description.'}</p>

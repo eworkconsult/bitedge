@@ -1,33 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import apiService from '../services/api'; // Using the default export
-// import './HomePage.css'; // Optional for styling
+import React from 'react';
+import Link from 'next/link'; // Use Next.js Link for client-side navigation
+import apiService from '../services/api';
 
-const HomePage = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+// This is a Server Component in Next.js.
+// Data fetching is done directly here on the server.
+async function getCategories() {
+  try {
+    const response = await apiService.fetchCategories();
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
+    // In a real app, you might have a more robust error handling mechanism
+    // that could show a specific error component.
+    return [];
+  }
+}
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        const response = await apiService.fetchCategories();
-        setCategories(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || err.message || 'Failed to load categories.');
-        console.error("Error fetching categories:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  if (loading) return <p>Loading categories...</p>;
-  if (error) return <p className="error-message" style={{color: 'red'}}>{error}</p>;
+const HomePage = async () => {
+  const categories = await getCategories();
 
   return (
     <div className="home-page">
@@ -40,16 +30,15 @@ const HomePage = () => {
         <ul className="category-list">
           {categories.map(category => (
             <li key={category.id} className="category-item">
-              <Link to={`/categories/${category.slug}`}>
+              <Link href={`/categories/${category.slug}`}>
                 <h2>{category.name}</h2>
               </Link>
               <p>{category.description || 'No description available.'}</p>
-              {/* Optionally display forum count or other stats if available from API */}
             </li>
           ))}
         </ul>
       )}
-      {/* Basic styling for category list (can be moved to CSS file) */}
+      {/* Basic styling (can be moved to CSS file) */}
       <style jsx>{`
         .category-list {
           list-style: none;
