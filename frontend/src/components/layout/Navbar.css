@@ -11,6 +11,41 @@
   align-items: center;
 }
 
+.navbar-center {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 2rem;
+}
+
+.search-bar {
+  display: flex;
+}
+
+.search-bar input {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #555;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  background-color: #444;
+  color: white;
+  min-width: 300px;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.search-bar button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #007bff;
+  background-color: #007bff;
+  color: white;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
 .navbar-brand {
   color: white;
   text-decoration: none;

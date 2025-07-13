@@ -87,4 +87,6 @@ export default {
     // Users
     fetchUserProfile: (username) => apiClient.get(`/users/${username}`),
     updateUserProfile: (data) => apiClient.put('/users/me/profile', data),
+    // Search
+    search: (query) => apiClient.get(`/search?q=${encodeURIComponent(query)}`),
 };

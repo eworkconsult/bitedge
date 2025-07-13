@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext'; // Corrected path
+import SearchBar from '../common/SearchBar'; // Import the SearchBar
 import './Navbar.css'; // For Navbar specific styles
 
 const Navbar = () => {
@@ -24,6 +25,9 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container">
         <Link to="/" className="navbar-brand">Bitedge Network</Link>
+        <div className="navbar-center">
+          <SearchBar />
+        </div>
         <ul className="navbar-nav">
           <li className="nav-item">
             <Link to="/" className="nav-link">Home</Link>

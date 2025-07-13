@@ -10,6 +10,7 @@ import TopicPage from './pages/TopicPage';
 import CreateTopicPage from './pages/CreateTopicPage'; // Import the new page
 import ProfilePage from './pages/ProfilePage'; // Import the new page
 import EditProfilePage from './pages/EditProfilePage'; // Import the new page
+import SearchPage from './pages/SearchPage'; // Import the new page
 import NotFoundPage from './pages/NotFoundPage';
 // import { AuthProvider } from './contexts/AuthContext'; // To be created
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
           <Route path="/login" element={<MainLayout><LoginPage /></MainLayout>} />
           <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} />
+          <Route path="/search" element={<MainLayout><SearchPage /></MainLayout>} />
 
           {/* Example category route: /categories/crypto-news */}
           <Route path="/categories/:categorySlug" element={<MainLayout><CategoryPage /></MainLayout>} />

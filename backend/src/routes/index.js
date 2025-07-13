@@ -8,9 +8,11 @@ const forumRoutes = require('./forumRoutes');
 const topicRoutes = require('./topicRoutes');
 const postRoutes = require('./postRoutes');
 const userRoutes = require('./userRoutes');
+const searchRoutes = require('./searchRoutes');
 
 // Mount resource routers
 router.use('/auth', authRoutes);
+router.use('/search', searchRoutes);
 router.use('/users', userRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/forums', forumRoutes);
