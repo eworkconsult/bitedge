@@ -11,11 +11,13 @@ const userRoutes = require('./userRoutes');
 const searchRoutes = require('./searchRoutes');
 const advertisementRoutes = require('./advertisementRoutes');
 const adServingRoutes = require('./adServingRoutes');
+const notificationRoutes = require('./notificationRoutes');
 
 // Mount resource routers
 router.use('/auth', authRoutes);
 router.use('/search', searchRoutes);
 router.use('/users', userRoutes);
+router.use('/notifications', notificationRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/forums', forumRoutes);
 router.use('/topics', topicRoutes);   // Handles reading topics and creating posts within topics

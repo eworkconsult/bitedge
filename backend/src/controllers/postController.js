@@ -1,4 +1,4 @@
-const { Post, Topic, User, Forum } = require('../../models');
+const { Post, Topic, User, Forum, Notification } = require('../../models');
 const sequelize = require('../db/sequelize'); // For transactions
 
 // Create a new Post within a Topic
@@ -55,6 +55,16 @@ exports.createPostInTopic = async (req, res, next) => {
                  forum.lastTopicId = topic.id;
             }
             await forum.save({ transaction: t });
+        }
+
+        // Create a notification for the topic author, if they aren't the one replying
+        if (topic.userId !== userId) {
+            await Notification.create({
+                recipientId: topic.userId,
+                senderId: userId,
+                topicId: topic.id,
+                type: 'new_reply'
+            }, { transaction: t });
         }
 
         await t.commit();

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import SearchBar from '../common/SearchBar';
+import NotificationIcon from './NotificationIcon'; // Import the new component
 import './Navbar.css';
 
 const Navbar = () => {
@@ -33,6 +34,9 @@ const Navbar = () => {
           </li>
           {isAuthenticated ? (
             <>
+              <li className="nav-item">
+                <NotificationIcon />
+              </li>
               <li className="nav-item">
                 <Link href={`/users/${user.username}`} className="nav-link">
                   Welcome, {user?.username || 'User'}!

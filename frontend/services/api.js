@@ -102,4 +102,9 @@ export default {
         }
         return apiClient.get(`/ads?${params.toString()}`);
     },
+    // Notifications
+    listNotifications: () => apiClient.get('/notifications'),
+    getUnreadNotificationCount: () => apiClient.get('/notifications/unread-count'),
+    markNotificationAsRead: (id) => apiClient.patch(`/notifications/${id}/read`),
+    markAllNotificationsAsRead: () => apiClient.post('/notifications/mark-all-read'),
 };
