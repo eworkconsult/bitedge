@@ -94,4 +94,12 @@ export default {
     createAdvertisement: (data) => apiClient.post('/advertisements', data),
     updateAdvertisement: (id, data) => apiClient.put(`/advertisements/${id}`, data),
     deleteAdvertisement: (id) => apiClient.delete(`/advertisements/${id}`),
+    // Ads (Public)
+    fetchActiveAds: (page_type, identifier) => {
+        const params = new URLSearchParams({ page_type });
+        if (identifier) {
+            params.append('identifier', identifier);
+        }
+        return apiClient.get(`/ads?${params.toString()}`);
+    },
 };

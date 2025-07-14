@@ -3,12 +3,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../contexts/AuthContext';
+import useAds from '../../../hooks/useAds'; // Import the new hook
+import AdSlot from '../../../components/ads/AdSlot'; // Import the AdSlot component
 import apiService from '../../../services/api';
 import RichTextEditor from '../../../components/common/RichTextEditor';
 import EditPostModal from '../../../components/modals/EditPostModal';
 
 const PostList = ({ initialTopic }) => {
   const [topic, setTopic] = useState(initialTopic);
+  const { ads, loading: adsLoading } = useAds('topic', initialTopic.slug);
   const { isAuthenticated, user } = useAuth();
 
   // State for the reply form
@@ -70,10 +73,16 @@ const PostList = ({ initialTopic }) => {
 
   return (
     <>
+      {/* Render header ads if they exist */}
+      {ads.header && ads.header.map((adCode, index) => (
+        <AdSlot key={`header-ad-${index}`} adCode={adCode} />
+      ))}
+
       <div className="post-list">
         {topic.posts && topic.posts.length > 0 ? (
-          topic.posts.map(post => (
-            <div key={post.id} className="post-item">
+          topic.posts.map((post, postIndex) => (
+            <React.Fragment key={post.id}>
+            <div className="post-item">
               <div className="post-header">
                 <div className="post-author">
                   <Link href={`/users/${post.user?.username}`}>
@@ -93,6 +102,15 @@ const PostList = ({ initialTopic }) => {
               </div>
               <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
             </div>
+            {/* Inject an ad after every 3 posts (and if the ad exists) */}
+            {(postIndex + 1) % 3 === 0 && ads.post_bottom && (
+              <div className="in-content-ad">
+                {ads.post_bottom.map((adCode, adIndex) => (
+                  <AdSlot key={`post-ad-${postIndex}-${adIndex}`} adCode={adCode} />
+                ))}
+              </div>
+            )}
+            </React.Fragment>
           ))
         ) : <p>No posts in this topic yet.</p>}
       </div>
