@@ -89,4 +89,9 @@ export default {
     updateUserProfile: (data) => apiClient.put('/users/me/profile', data),
     // Search
     search: (query) => apiClient.get(`/search?q=${encodeURIComponent(query)}`),
+    // Advertisements (Admin)
+    listAdvertisements: () => apiClient.get('/advertisements'),
+    createAdvertisement: (data) => apiClient.post('/advertisements', data),
+    updateAdvertisement: (id, data) => apiClient.put(`/advertisements/${id}`, data),
+    deleteAdvertisement: (id) => apiClient.delete(`/advertisements/${id}`),
 };

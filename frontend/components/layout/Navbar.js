@@ -41,6 +41,11 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link href="/settings/profile" className="nav-link">Edit Profile</Link>
               </li>
+              {user?.isAdmin && (
+                <li className="nav-item">
+                  <Link href="/admin" className="nav-link">Admin</Link>
+                </li>
+              )}
               <li className="nav-item">
                 <button onClick={handleLogout} className="nav-link btn-link">Logout</button>
               </li>
